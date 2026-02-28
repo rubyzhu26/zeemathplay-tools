@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic Kaleidoscope Maker — Zeemathplay</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #FF6B9D;
+  --purple: #9B59B6;
+  --teal: #4ECDC4;
+  --bg: #FFF8F0;
+  --card: #ffffff;
+  --text: #2D2D2D;
+  --shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Nunito',sans-serif; background:var(--bg); min-height:100vh; }
+.wrapper { max-width:960px; margin:0 auto; padding:20px 16px 40px; }
+.header { text-align:center; margin-bottom:20px; }
+.brand { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--pink); margin-bottom:6px; }
+h1 { font-family:'Baloo 2',cursive; font-size:clamp(1.6rem,4vw,2.6rem); font-weight:800; color:var(--text); line-height:1.1; margin-bottom:6px; }
+h1 span { background:linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.subtitle { font-size:14px; color:#888; font-weight:600; }
+.main { display:grid; grid-template-columns:1fr 260px; gap:16px; align-items:start; }
+@media(max-width:680px){ .main{ grid-template-columns:1fr; } }
+.canvas-card { background:var(--card); border-radius:20px; padding:16px; box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; gap:10px; }
+canvas { border-radius:12px; background:transparent; width:100%; max-width:500px; aspect-ratio:1; display:block; }
+.canvas-hint { font-size:12px; color:#aaa; font-weight:600; }
+.controls-card { background:var(--card); border-radius:20px; padding:12px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px; }
+.section-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ccc; margin-bottom:4px; }
+.palette-list { display:flex; flex-direction:column; gap:4px; }
+.palette-btn { display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px; border:2px solid transparent; background:#f8f8f8; cursor:pointer; font-family:'Nunito',sans-serif; font-size:12px; font-weight:700; color:var(--text); transition:all 0.15s; outline:none; }
+.palette-btn:hover { background:#f0f0f0; }
+.palette-btn.active { border-color:var(--pink); background:#fff0f5; }
+.palette-dots { display:flex; gap:3px; }
+.palette-dot { width:8px; height:8px; border-radius:50%; }
+.shape-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
+.shape-btn { padding:6px 2px; border-radius:8px; border:2px solid #eee; background:#f8f8f8; cursor:pointer; font-family:'Nunito',sans-serif; font-size:9px; font-weight:700; color:#888; text-align:center; transition:all 0.15s; outline:none; }
+.shape-btn .si { font-size:15px; display:block; margin-bottom:1px; }
+.shape-btn:hover { border-color:var(--pink); color:var(--pink); background:#fff0f5; }
+.shape-btn.active { border-color:var(--pink); color:var(--pink); background:#fff0f5; }
+.slider-group { display:flex; flex-direction:column; gap:7px; }
+.slider-row { display:flex; flex-direction:column; gap:2px; }
+.slider-label { display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:var(--text); }
+.slider-val { color:var(--pink); font-family:'Baloo 2',cursive; }
+input[type=range] { -webkit-appearance:none; width:100%; height:4px; border-radius:2px; background:#eee; outline:none; cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:linear-gradient(135deg,var(--pink),var(--purple)); cursor:pointer; }
+.bg-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:4px; }
+.bg-btn { aspect-ratio:1; border-radius:6px; border:2px solid #eee; font-size:13px; cursor:pointer; transition:all 0.15s; outline:none; background:#f9f9f9; }
+.bg-btn:hover { transform:scale(1.1); border-color:var(--pink); }
+.bg-btn.active { border-color:var(--pink); transform:scale(1.1); }
+.action-btns { display:flex; flex-direction:column; gap:6px; }
+.btn-primary { padding:10px; border-radius:12px; border:none; background:linear-gradient(135deg,var(--pink),var(--purple)); color:white; font-family:'Baloo 2',cursive; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:6px; outline:none; }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(255,107,157,0.4); }
+.btn-secondary { padding:8px; border-radius:12px; border:2px solid #eee; background:white; color:var(--text); font-family:'Baloo 2',cursive; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:6px; outline:none; }
+.btn-secondary:hover { border-color:var(--teal); color:var(--teal); }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="brand">● ZEEMATHPLAY ●</div>
+    <h1>Magic <span>Kaleidoscope</span> Maker ✨</h1>
+    <p class="subtitle">Create stunning patterns and discover the math inside! 🔮</p>
+  </div>
+  <div class="main">
+    <div class="canvas-card">
+      <canvas id="canvas" width="1200" height="1200"></canvas>
+      <p class="canvas-hint">✨ Your kaleidoscope is spinning!</p>
+    </div>
+    <div class="controls-card">
+      <div>
+        <div class="section-label">🎨 Color Theme</div>
+        <div class="palette-list">
+          <button class="palette-btn active" data-palette="0"><div class="palette-dots"><div class="palette-dot" style="background:#FF6B9D"></div><div class="palette-dot" style="background:#9B59B6"></div><div class="palette-dot" style="background:#FFE66D"></div></div>Cotton Candy 🍬</button>
+          <button class="palette-btn" data-palette="1"><div class="palette-dots"><div class="palette-dot" style="background:#FF0055"></div><div class="palette-dot" style="background:#FFCC00"></div><div class="palette-dot" style="background:#0066FF"></div></div>Vivid Pop 🌈</button>
+          <button class="palette-btn" data-palette="2"><div class="palette-dots"><div class="palette-dot" style="background:#5B8C5A"></div><div class="palette-dot" style="background:#F2C94C"></div><div class="palette-dot" style="background:#D4845A"></div></div>Nature Earth 🌿</button>
+          <button class="palette-btn" data-palette="3"><div class="palette-dots"><div class="palette-dot" style="background:#aaaaff"></div><div class="palette-dot" style="background:#6B6BFF"></div><div class="palette-dot" style="background:#ccccff"></div></div>Galaxy Dream 🌌</button>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">🔷 Pattern Style</div>
+        <div class="shape-grid">
+          <button class="shape-btn active" data-shape="petal"><span class="si">🌸</span>Petal</button>
+          <button class="shape-btn" data-shape="star"><span class="si">⭐</span>Star</button>
+          <button class="shape-btn" data-shape="circle"><span class="si">🔵</span>Circle</button>
+          <button class="shape-btn" data-shape="diamond"><span class="si">💎</span>Diamond</button>
+          <button class="shape-btn" data-shape="triangle"><span class="si">🔺</span>Tri</button>
+          <button class="shape-btn" data-shape="spiral"><span class="si">🌀</span>Spiral</button>
+        </div>
+      </div>
+      <div class="slider-group">
+        <div class="slider-row">
+          <div class="slider-label"><span>✦ Symmetry</span><span class="slider-val" id="symVal">8</span></div>
+          <input type="range" id="symmetry" min="4" max="16" value="8" step="2">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>🔵 Layers</span><span class="slider-val" id="layersVal">4</span></div>
+          <input type="range" id="layers" min="2" max="7" value="4">
+        </div>
+        <div class="slider-row">
+          <div class="slider-label"><span>✨ Complexity</span><span class="slider-val" id="complexVal">5</span></div>
+          <input type="range" id="complexity" min="1" max="10" value="5">
+        </div>
+      </div>
+      <div>
+        <div class="section-label">🌈 Background</div>
+        <div class="bg-grid">
+          <button class="bg-btn" data-bg="dark">🌑</button>
+          <button class="bg-btn active" data-bg="white">⬜</button>
+          <button class="bg-btn" data-bg="cream">🟡</button>
+          <button class="bg-btn" data-bg="sky">🩵</button>
+          <button class="bg-btn" data-bg="blush">🩷</button>
+          <button class="bg-btn" data-bg="mint">💚</button>
+          <button class="bg-btn" data-bg="lavender">💜</button>
+          <button class="bg-btn" data-bg="sand">🟤</button>
+        </div>
+      </div>
+      <div class="action-btns">
+        <button class="btn-primary" id="generateBtn">✨ New Pattern</button>
+        <button class="btn-secondary" id="downloadBtn">⬇️ Save My Art</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var PALETTES = [
+  ["#FF6B9D","#9B59B6","#FFE66D","#FF8C42","#4ECDC4","#FF6B6B"],
+  ["#FF0055","#FF6600","#FFCC00","#00CC44","#0066FF","#CC00FF"],
+  ["#5B8C5A","#A7C47F","#F2C94C","#D4845A","#8B5E3C","#C8E6C1"],
+  ["#ffffff","#aaaaff","#6B6BFF","#ccccff","#9999FF","#5555DD"]
+];
+var BG = {
+  dark:["#1a1a3e","#0a0a1a"],white:["#ffffff","#f0f0f8"],cream:["#fffdf0","#fef6d8"],
+  sky:["#e8f6ff","#cce8ff"],blush:["#fff0f5","#ffd6e7"],mint:["#edfdf5","#c8f5e0"],
+  lavender:["#f3eeff","#ddd0ff"],sand:["#fdf6ec","#f5e6cc"]
+};
+var pal=0, bg="white", shape="petal", sym=8, lay=4, cplx=5, rot=0;
+
+function draw() {
+  var w=canvas.width, h=canvas.height, cx=w/2, cy=h/2;
+  var palette=PALETTES[pal], c=cplx/10, maxR=Math.min(w,h)*0.44;
+  ctx.clearRect(0,0,w,h);
+  var bgP=BG[bg]||BG.white;
+  var bgG=ctx.createRadialGradient(cx,cy,0,cx,cy,w*0.8);
+  bgG.addColorStop(0,bgP[0]); bgG.addColorStop(1,bgP[1]);
+  ctx.fillStyle=bgG; ctx.fillRect(0,0,w,h);
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot*Math.PI/180);
+  if(shape==="petal") drawFlower(maxR,palette,c);
+  else if(shape==="star") drawStar(maxR,palette,c);
+  else if(shape==="circle") drawRings(maxR,palette,c);
+  else if(shape==="diamond") drawDiamond(maxR,palette,c);
+  else if(shape==="triangle") drawTri(maxR,palette,c);
+  else if(shape==="spiral") drawSpiral(maxR,palette,c);
+  ctx.globalAlpha=1;
+  var cg=ctx.createRadialGradient(0,0,0,0,0,maxR*0.07);
+  cg.addColorStop(0,"#ffffff"); cg.addColorStop(1,palette[0]+"88");
+  ctx.beginPath(); ctx.arc(0,0,maxR*0.07,0,Math.PI*2);
+  ctx.fillStyle=cg; ctx.fill(); ctx.restore();
+}
+
+function drawFlower(maxR,palette,c) {
+  for(var l=lay;l>=1;l--) {
+    var r=(l/lay)*maxR, color=palette[l%palette.length];
+    var pLen=r*(0.4+c*0.2), pW=(maxR/lay)*(0.5+c*0.7);
+    ctx.globalAlpha=0.7+(l/lay)*0.3;
+    for(var i=0;i<sym;i++) {
+      ctx.save(); ctx.rotate((i/sym)*Math.PI*2);
+      var g=ctx.createLinearGradient(0,-r+pLen,0,-r);
+      g.addColorStop(0,color+"dd"); g.addColorStop(1,color+"33");
+      ctx.beginPath();
+      ctx.moveTo(0,-r+pLen);
+      ctx.bezierCurveTo(pW,-r+pLen*0.4,pW,-r+pLen*0.1,0,-r);
+      ctx.bezierCurveTo(-pW,-r+pLen*0.1,-pW,-r+pLen*0.4,0,-r+pLen);
+      ctx.fillStyle=g; ctx.fill();
+      ctx.strokeStyle="rgba(255,255,255,0.2)"; ctx.lineWidth=2; ctx.stroke();
+      ctx.restore();
+    }
+  }
+}
+
+function drawStar(maxR,palette,c) {
+  for(var l=lay;l>=1;l--) {
+    var r=(l/lay)*maxR, ir=r*(0.35+c*0.1), color=palette[l%palette.length];
+    ctx.globalAlpha=0.65+(l/lay)*0.35;
+    ctx.beginPath();
+    for(var i=0;i<sym*2;i++) {
+      var a=(i/(sym*2))*Math.PI*2-Math.PI/2, ra=i%2===0?r:ir;
+      if(i===0) ctx.moveTo(Math.cos(a)*ra,Math.sin(a)*ra);
+      else ctx.lineTo(Math.cos(a)*ra,Math.sin(a)*ra);
+    }
+    ctx.closePath();
+    var g=ctx.createRadialGradient(0,0,ir,0,0,r);
+    g.addColorStop(0,color+"ff"); g.addColorStop(1,color+"22");
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle="rgba(255,255,255,0.2)"; ctx.lineWidth=2; ctx.stroke();
+  }
+}
+
+function drawRings(maxR,palette,c) {
+  var rc=lay*2+3;
+  for(var l=rc;l>=1;l--) {
+    var r=(l/rc)*maxR, amp=r*(0.05+c*0.12), color=palette[l%palette.length];
+    ctx.globalAlpha=0.6+(l/rc)*0.4;
+    ctx.beginPath();
+    for(var t=0;t<=120;t++) {
+      var a=(t/120)*Math.PI*2, rad=r+amp*Math.sin(a*sym+l);
+      if(t===0) ctx.moveTo(Math.cos(a)*rad,Math.sin(a)*rad);
+      else ctx.lineTo(Math.cos(a)*rad,Math.sin(a)*rad);
+    }
+    ctx.closePath();
+    ctx.strokeStyle=color; ctx.lineWidth=(r/maxR)*8+2; ctx.stroke();
+    if(l<rc*0.35){ctx.fillStyle=color+"44";ctx.fill();}
+  }
+}
+
+function drawDiamond(maxR,palette,c) {
+  var sides=Math.max(4,Math.round(4+c*4));
+  for(var l=lay;l>=1;l--) {
+    var r=(l/lay)*maxR, color=palette[l%palette.length];
+    ctx.globalAlpha=0.65+(l/lay)*0.35;
+    ctx.save(); ctx.rotate((l*Math.PI)/sides+(l%2)*(Math.PI/sides));
+    ctx.beginPath();
+    for(var i=0;i<sides;i++) {
+      var a=(i/sides)*Math.PI*2-Math.PI/2;
+      if(i===0) ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+      else ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+    }
+    ctx.closePath();
+    var g=ctx.createRadialGradient(0,0,0,0,0,r);
+    g.addColorStop(0,color+"cc"); g.addColorStop(1,color+"33");
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle="rgba(255,255,255,0.3)"; ctx.lineWidth=2; ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function drawTri(maxR,palette,c) {
+  for(var l=lay;l>=1;l--) {
+    var r=(l/lay)*maxR, pr=((l-1)/lay)*maxR, color=palette[l%palette.length];
+    ctx.globalAlpha=0.7+(l/lay)*0.3;
+    for(var i=0;i<sym;i++) {
+      var a1=(i/sym)*Math.PI*2, a2=((i+0.5)/sym)*Math.PI*2, a3=((i+1)/sym)*Math.PI*2;
+      var flip=(l+i)%2===0;
+      ctx.beginPath();
+      if(flip){ctx.moveTo(Math.cos(a1)*pr,Math.sin(a1)*pr);ctx.lineTo(Math.cos(a2)*r,Math.sin(a2)*r);ctx.lineTo(Math.cos(a3)*pr,Math.sin(a3)*pr);}
+      else{ctx.moveTo(Math.cos(a1)*r,Math.sin(a1)*r);ctx.lineTo(Math.cos(a2)*pr,Math.sin(a2)*pr);ctx.lineTo(Math.cos(a3)*r,Math.sin(a3)*r);}
+      ctx.closePath();
+      var g=ctx.createRadialGradient(0,0,pr,0,0,r);
+      g.addColorStop(0,color+"ee"); g.addColorStop(1,color+"44");
+      ctx.fillStyle=g; ctx.fill();
+      ctx.strokeStyle="rgba(255,255,255,0.2)"; ctx.lineWidth=1.5; ctx.stroke();
+    }
+  }
+}
+
+function drawSpiral(maxR,palette,c) {
+  var turns=1.5+c*3, steps=200;
+  for(var arm=0;arm<sym;arm++) {
+    var off=(arm/sym)*Math.PI*2, color=palette[arm%palette.length];
+    ctx.beginPath();
+    for(var t=0;t<=steps;t++) {
+      var prog=t/steps, r=prog*maxR, a=off+prog*Math.PI*2*turns;
+      if(t===0) ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+      else ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+    }
+    ctx.globalAlpha=0.8; ctx.strokeStyle=color; ctx.lineWidth=4+c*6; ctx.lineCap="round"; ctx.stroke();
+  }
+}
+
+function animate() { rot+=0.4; draw(); requestAnimationFrame(animate); }
+
+document.getElementById("generateBtn").addEventListener("click",function(){rot=0;});
+document.getElementById("downloadBtn").addEventListener("click",function(){
+  try{canvas.toBlob(function(blob){var url=URL.createObjectURL(blob);var a=document.createElement("a");a.download="kaleidoscope-zeemathplay.png";a.href=url;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);},"image/png");}
+  catch(e){var w=window.open();w.document.write("<img src='"+canvas.toDataURL()+"' style='max-width:100%'><p>Right-click to save!</p>");}
+});
+document.getElementById("symmetry").addEventListener("input",function(e){sym=+e.target.value;document.getElementById("symVal").textContent=sym;});
+document.getElementById("layers").addEventListener("input",function(e){lay=+e.target.value;document.getElementById("layersVal").textContent=lay;});
+document.getElementById("complexity").addEventListener("input",function(e){cplx=+e.target.value;document.getElementById("complexVal").textContent=cplx;});
+document.querySelectorAll(".palette-btn").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll(".palette-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");pal=+btn.dataset.palette;});});
+document.querySelectorAll(".shape-btn").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll(".shape-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");shape=btn.dataset.shape;});});
+document.querySelectorAll(".bg-btn").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll(".bg-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");bg=btn.dataset.bg;});});
+animate();
+</script>
+</body>
+</html>
